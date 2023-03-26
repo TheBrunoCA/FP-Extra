@@ -1,6 +1,6 @@
-; FP-Extra v0
-
 #Requires AutoHotkey v2.0
+
+script_hard_version := 0
 
 #SingleInstance Force
 SetWorkingDir A_ScriptDir
