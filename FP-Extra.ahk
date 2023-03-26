@@ -1,3 +1,5 @@
+; FP-Extra v0
+
 #Requires AutoHotkey v2.0
 
 #SingleInstance Force
@@ -16,7 +18,7 @@ if(FileExist(version_file) == ""){
 
 isUpdated(){
     try {
-        git := Github("TheBrunoCA", A_ScriptName)
+        git := Github("TheBrunoCA", "FP-Extra")
     } catch Error as e {
         if(e.Message == "Item has no value.")
            throw Error("Não foi possível encontrar a pagina do repositorio.")
