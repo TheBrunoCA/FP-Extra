@@ -1,6 +1,17 @@
 #Requires AutoHotkey v2.0
 
+; Versão hard coded do script
 script_hard_version := 0
+
+showScriptVersion(){
+    MsgBox("FP-Extra versão: " script_hard_version, "Versão do aplicativo")
+}
+
+; Hotkey para mostrar versão
+^+!v::showScriptVersion()
+
+; Hotkey para atualizar script
+^+!u::updateScript()
 
 #SingleInstance Force
 SetWorkingDir A_ScriptDir
@@ -55,6 +66,6 @@ reloadScript(){
 	Reload
 }
 
-checkAndUpdate()
+;checkAndUpdate()
 
-mainGui := Gui("+AlwaysOnTop", A_ScriptName)
+;mainGui := Gui("+AlwaysOnTop", A_ScriptName)
