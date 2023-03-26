@@ -15,7 +15,6 @@ showScriptVersion(){
 
 #SingleInstance Force
 SetWorkingDir A_ScriptDir
-TraySetIcon("assets\icon.ico")
 
 #Include lib\github.ahk
 #Include lib\Native.ahk
