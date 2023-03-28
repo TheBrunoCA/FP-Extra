@@ -60,6 +60,15 @@ Class Git {
         this.url := "https://api.github.com/repos/" user "/" repo "/releases/latest"
         this.body := DownloadToVar(this.url)
         this.body := FormatJsonToSimpleArray(this.body)
+        if(this.body.Length < 2){
+            this.is_online := false
+            return
+        }
+        if(this.body[2] == "NotFound"){
+            this.is_online := false
+            return
+        }
+        this.is_online := true
         this.dl_url := GetKeyValueFromArray(this.body, "browser_download_url")
         this.version := GetKeyValueFromArray(this.body, "tag_name")
         this.extension := StrSplit(this.dl_url, ".")
