@@ -54,7 +54,6 @@ CheckUpdates(){
         UpdateApp()
         return
     }
-    MsgBox("Atualizado") ;FIXME: Remover isso
     return
 }
 

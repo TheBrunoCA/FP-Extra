@@ -70,7 +70,9 @@ Class Git {
         }
         this.is_online := true
         this.dl_url := GetKeyValueFromArray(this.body, "browser_download_url")
-        this.version := GetKeyValueFromArray(this.body, "tag_name")
+        this.version := GetKeyValueFromArray(this.body, "name")
+        this.version := StrSplit(this.version, "v")
+        this.version := this.version[this.version.Length]
         this.extension := StrSplit(this.dl_url, ".")
         this.extension := this.extension[this.extension.Length]
     }
