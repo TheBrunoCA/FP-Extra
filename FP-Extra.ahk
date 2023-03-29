@@ -1,13 +1,12 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
-SetWorkingDir A_ScriptDir
 
 
 ; Includes
 #Include lib\extra-functions.ahk
 #Include lib\github-updater.ahk
 
-dir_path := A_AppData "\" GetAppName()
+dir_path := A_ProgramFiles "\" GetAppName()
 
 config_file := dir_path "\config.ini"
 
@@ -82,7 +81,6 @@ btn_calc_date := MainGui.AddButton("x200", "Calcular validade")
 btn_calc_date.OnEvent("Click", CalculateExpirationDate)
 
 if(config.auto_update){
-    CheckUpdates(&github, config_file)
+    CheckUpdates(&github, config_file, A_WorkingDir)
 }
 MainGui.Show()
-

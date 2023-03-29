@@ -52,7 +52,7 @@ EX: v0.11 > v0.10 BUT < v0.12.
 @Param &git_hub Reference to the github object.
 @Param version_file Path to the version ini file.
 */
-CheckUpdates(&git_hub, version_file){
+CheckUpdates(&git_hub, version_file, download_where){
     if(!git_hub.is_online){
         return
     }
@@ -61,7 +61,7 @@ CheckUpdates(&git_hub, version_file){
     }
     answer := MsgBox("Uma nova versão do app foi encontrada, deseja atualizar?", "Versão " git_hub.GetVersion() " encontrada","0x4")
     if(answer == "Yes"){
-        UpdateApp(&git_hub, GetAppName(), , , config_file)
+        UpdateApp(&git_hub, download_where, GetAppName(), , , config_file)
         return
     }
     return
@@ -91,8 +91,12 @@ Downloads from github and replaces the executable or script
 @Param save_version TODO: Should save the version somewhere?
 @Param version_path Where to save the version, it should be a .ini file
 */
-UpdateApp(&git_hub, app_name, update_message := "",save_version := true, version_path := A_MyDocuments "\" app_name ".ini"){
-    git_hub.Download(A_WorkingDir, app_name)
+UpdateApp(&git_hub, download_where, app_name, update_message := "", save_version := true, version_path := A_MyDocuments "\" app_name ".ini"){
+    DirCreate(download_where)
+	if(FileExist(download_where "\" app_name "." git_hub.GetExtension()) != ""){
+		FileMove(download_where "\" app_name "." git_hub.GetExtension(), A_Temp)
+	}
+	git_hub.Download(download_where, app_name)
     IniWrite git_hub.GetVersion(), version_path, "version", app_name
     MsgBox("A Aplicação foi atualizada e será fechada automaticamente, por favor apenas reabra.", app_name " atualizado!")
     ExitApp()
