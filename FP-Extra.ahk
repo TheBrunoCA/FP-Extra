@@ -22,6 +22,7 @@ Class config{
     __New() {
         ; update
         static auto_update := false
+        static expiration_date := 179
     }
 }
 
@@ -74,8 +75,10 @@ LoadConfigs(){
     if(FileExist(config_file) == ""){
         IniWrite("0", config_file, "version", GetAppName())
         IniWrite("true", config_file, "update", "auto-update")
+        IniWrite(179, config_file, "general", "presc_expiration_date")
     }
     config.auto_update := IniRead(config_file, "update", "auto-update", true)
+    config.expiration_date := IniRead(config_file, "general", "presc_expiration_date", 179)
     if(!github.is_online){
         return
     }
@@ -90,6 +93,16 @@ OpenConfigMenu(arg*){
     MsgBox("Ainda não implementado.")
 }
 
+CalculateExpirationDate(arg*){
+    presc_date := cal_presc_date.Value
+    cal_presc_date.Value := A_Now
+    expiration_date := DateAdd(presc_date, config.expiration_date, "Days")
+    expiration_date := FormatTime(expiration_date, "LongDate")
+
+    MsgBox("A receita é válida até " expiration_date)
+
+}
+
 github := Git(git_user, git_repo)
 
 LoadConfigs()
@@ -100,8 +113,15 @@ MainGui.SetFont("s20", "Consolas")
 MainGui.AddText("Center", "FP-Extra por Bruno")
 
 MainGui.SetFont("s10")
+
 btn_config := MainGui.AddButton("xm", "Configurações")
 btn_config.OnEvent("Click", OpenConfigMenu)
+
+MainGui.AddText("x215 y60", "Data da receita")
+cal_presc_date := MainGui.AddMonthCal("x160 y80")
+
+btn_calc_date := MainGui.AddButton("x200", "Calcular validade")
+btn_calc_date.OnEvent("Click", CalculateExpirationDate)
 
 if(config.auto_update){
     CheckUpdates()
