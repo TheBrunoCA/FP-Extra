@@ -4,7 +4,8 @@ SetWorkingDir A_ScriptDir
 
 
 ; Includes
-#Include lib\functions.ahk
+#Include lib\extra-functions.ahk
+#Include lib\github-updater.ahk
 
 dir_path := A_AppData "\" GetAppName()
 
@@ -16,70 +17,27 @@ icon_url := "https://drive.google.com/uc?export=download&id=1xNRHV5RBpoEbag6-m5r
 
 git_user := "TheBrunoCA"
 
-git_repo := "FP-Extra"
+git_repo := GetAppName()
 
 Class config{
-    __New() {
-        ; update
-        static auto_update := false
-        static expiration_date := 179
-    }
+    static auto_update := true
+    static expiration_date := 179
 }
 
 
-GetAppName(){
-    return StrSplit(A_ScriptName, ".")[1]
-}
 
-reloadScript(){
-    MsgBox("Reloading", , "t1")
-	Reload
-}
-
-UpdateApp(){
-    github.Download(A_WorkingDir, "FP-Extra")
-    IniWrite github.GetVersion(), config_file, "version", GetAppName()
-    MsgBox("A Aplicação foi atualizada e será fechada automaticamente, por favor apenas reabra.", "FP-Extra atualizado!")
-    ExitApp()
-}
-
-CheckUpdates(){
-    if(!github.is_online){
-        return
-    }
-    if(IsUpdated()){
-        return
-    }
-    answer := MsgBox("Uma nova versão do app foi encontrada, deseja atualizar?", "Versão " github.GetVersion() " encontrada","0x4")
-    if(answer == "Yes"){
-        UpdateApp()
-        return
-    }
-    return
-}
-
-IsUpdated(){
-    if(FileExist(config_file) == ""){
-        return false
-    }
-    if(IniRead(config_file, "version", GetAppName()) < github.GetVersion()){
-        return false
-    }
-    return true
-}
-
-LoadConfigs(){
+LoadConfigs(&git_hub){
     if(DirExist(dir_path) == ""){
         DirCreate(dir_path)
     }
     if(FileExist(config_file) == ""){
         IniWrite("0", config_file, "version", GetAppName())
-        IniWrite("true", config_file, "update", "auto-update")
-        IniWrite(179, config_file, "general", "presc_expiration_date")
+        IniWrite(config.auto_update, config_file, "update", "auto-update")
+        IniWrite(config.expiration_date, config_file, "general", "presc_expiration_date")
     }
-    config.auto_update := IniRead(config_file, "update", "auto-update", true)
-    config.expiration_date := IniRead(config_file, "general", "presc_expiration_date", 179)
-    if(!github.is_online){
+    config.auto_update := IniRead(config_file, "update", "auto-update", config.auto_update)
+    config.expiration_date := IniRead(config_file, "general", "presc_expiration_date", config.expiration_date)
+    if(!git_hub.is_online){
         return
     }
     if(FileExist(icon_path) == ""){
@@ -105,7 +63,7 @@ CalculateExpirationDate(arg*){
 
 github := Git(git_user, git_repo)
 
-LoadConfigs()
+LoadConfigs(&github)
 
 MainGui := Gui("-MaximizeBox +OwnDialogs", "FP-Extra Tela principal")
 
@@ -124,7 +82,7 @@ btn_calc_date := MainGui.AddButton("x200", "Calcular validade")
 btn_calc_date.OnEvent("Click", CalculateExpirationDate)
 
 if(config.auto_update){
-    CheckUpdates()
+    CheckUpdates(&github, config_file)
 }
 MainGui.Show()
 
