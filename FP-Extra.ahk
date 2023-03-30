@@ -1,10 +1,15 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
 
+was_updated := false
+DetectHiddenWindows(true)
+if(WinExist(GetAppName() "_batch")){
+    was_updated := true
+}
 
 ; Includes
-#Include ..\libraries\extra-functions.ahk
-#Include ..\libraries\github-updater.ahk
+#Include ..\libraries\Bruno-Functions\bruno-functions.ahk
+#Include ..\libraries\Github-Updater.ahk\github-updater.ahk
 
 dir_path := A_AppData "\" GetAppName()
 
@@ -64,7 +69,7 @@ github := Git(git_user, git_repo)
 
 LoadConfigs(&github)
 
-MainGui := Gui("-MaximizeBox +OwnDialogs", "FP-Extra Tela principal")
+MainGui := Gui("-MaximizeBox +OwnDialogs", "FP-Extra v-" IniRead(config_file, "version", GetAppName(), ""))
 
 MainGui.SetFont("s20", "Consolas")
 MainGui.AddText("Center", "FP-Extra por " git_user)
