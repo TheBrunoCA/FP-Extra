@@ -3,8 +3,8 @@
 
 
 ; Includes
-#Include lib\extra-functions.ahk
-#Include lib\github-updater.ahk
+#Include ..\libraries\extra-functions.ahk
+#Include ..\libraries\github-updater.ahk
 
 dir_path := A_AppData "\" GetAppName()
 
