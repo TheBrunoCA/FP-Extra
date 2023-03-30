@@ -61,7 +61,7 @@ CheckUpdates(&git_hub, version_file, download_where){
     }
     answer := MsgBox("Uma nova versão do app foi encontrada, deseja atualizar?", "Versão " git_hub.GetVersion() " encontrada","0x4")
     if(answer == "Yes"){
-        UpdateApp(&git_hub, download_where, GetAppName(), , , config_file)
+        UpdateApp(&git_hub, download_where, GetAppName(), , , version_file)
         return
     }
     return
@@ -92,12 +92,39 @@ Downloads from github and replaces the executable or script
 @Param version_path Where to save the version, it should be a .ini file
 */
 UpdateApp(&git_hub, download_where, app_name, update_message := "", save_version := true, version_path := A_MyDocuments "\" app_name ".ini"){
-    DirCreate(download_where)
-	if(FileExist(download_where "\" app_name "." git_hub.GetExtension()) != ""){
-		FileMove(download_where "\" app_name "." git_hub.GetExtension(), A_Temp)
-	}
-	git_hub.Download(download_where, app_name)
+    download_path := A_Temp "\" app_name "." git_hub.GetExtension()
+    If(FileExist(download_path != "")){
+        FileDelete(download_path)
+    }
+    bat_file := A_Temp "\" app_name "_batch.bat"
+    if(FileExist(bat_file) != ""){
+        FileDelete(bat_file)
+    }
+    ; Write batch
+    ; Download update
+    ; Update version
+    ; MsgBox
+    ; Run batch
+    ; ExitApp()
+    FileAppend("timeout /t 1 /nobreak",bat_file)
+
+    EnvSet("DeleteThisFile", A_WorkingDir "\" app_name "." git_hub.GetExtension())
+    FileAppend("`ndel `"%DeleteThisFile%`"",bat_file)
+
+    EnvSet("MoveThis", download_path)
+    EnvSet("MoveThere", A_WorkingDir)
+    FileAppend("`nmove /y `"%MoveThis%`" `"%MoveThere%`"",bat_file)
+
+    EnvSet("StartThis", A_WorkingDir "\" app_name "." git_hub.GetExtension())
+    FileAppend("`nstart `"`" `"%StartThis%`"",bat_file)
+    
+    FileAppend("`ntimeout /t 2 /nobreak",bat_file)
+    
+    git_hub.Download(A_Temp, app_name)
+
     IniWrite git_hub.GetVersion(), version_path, "version", app_name
-    MsgBox("A Aplicação foi atualizada e será fechada automaticamente, por favor apenas reabra.", app_name " atualizado!")
+
+    MsgBox("A Aplicação foi atualizada e será reiniciada automaticamente, apenas aguarde.", app_name " atualizado!")
+    Run(bat_file, , "Hide")
     ExitApp()
 }

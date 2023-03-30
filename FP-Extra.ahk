@@ -6,7 +6,7 @@
 #Include lib\extra-functions.ahk
 #Include lib\github-updater.ahk
 
-dir_path := A_ProgramFiles "\" GetAppName()
+dir_path := A_AppData "\" GetAppName()
 
 config_file := dir_path "\config.ini"
 
@@ -67,7 +67,7 @@ LoadConfigs(&github)
 MainGui := Gui("-MaximizeBox +OwnDialogs", "FP-Extra Tela principal")
 
 MainGui.SetFont("s20", "Consolas")
-MainGui.AddText("Center", "FP-Extra por Bruno")
+MainGui.AddText("Center", "FP-Extra por Bruno oi")
 
 MainGui.SetFont("s10")
 
