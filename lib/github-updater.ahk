@@ -46,7 +46,7 @@ Class Git {
 
 /*
 Check on github for updates, for this to work there must be a release on the repository, 
-with the version on the end of the name, such as this. "some-release-doesnt-matter v0.10"
+with the version on the end of the tag after a letter "v", such as this. "some-tag-doesnt-matter v0.10"
 IMPORTANT: There should be one or zero dots on the version. And any superior version should be a higher number
 EX: v0.11 > v0.10 BUT < v0.12.
 @Param &git_hub Reference to the github object.

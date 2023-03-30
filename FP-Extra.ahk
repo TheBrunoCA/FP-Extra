@@ -67,7 +67,7 @@ LoadConfigs(&github)
 MainGui := Gui("-MaximizeBox +OwnDialogs", "FP-Extra Tela principal")
 
 MainGui.SetFont("s20", "Consolas")
-MainGui.AddText("Center", "FP-Extra por Bruno oi")
+MainGui.AddText("Center", "FP-Extra por " git_user)
 
 MainGui.SetFont("s10")
 
