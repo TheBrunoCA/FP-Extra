@@ -2,8 +2,8 @@
 #SingleInstance Force
 
 was_updated := false
-DetectHiddenWindows(true)
-if(WinExist(GetAppName() "_batch")){
+DetectHiddenWindows(True)
+if(WinExist(GetAppName() "_batch.bat")){
     was_updated := true
 }
 
@@ -12,6 +12,10 @@ if(WinExist(GetAppName() "_batch")){
 #Include ..\libraries\Github-Updater.ahk\github-updater.ahk
 
 dir_path := A_AppData "\" GetAppName()
+
+if(DirExist(dir_path) == ""){
+    DirCreate(dir_path)
+}
 
 config_file := dir_path "\config.ini"
 
@@ -24,23 +28,13 @@ git_user := "TheBrunoCA"
 git_repo := GetAppName()
 
 Class config{
+    static ini := IniFile(config_file, , true)
+    static version := 0.12
     static auto_update := true
     static expiration_date := 179
 }
 
-
-
 LoadConfigs(&git_hub){
-    if(DirExist(dir_path) == ""){
-        DirCreate(dir_path)
-    }
-    if(FileExist(config_file) == ""){
-        IniWrite("0", config_file, "version", GetAppName())
-        IniWrite(config.auto_update, config_file, "update", "auto-update")
-        IniWrite(config.expiration_date, config_file, "general", "presc_expiration_date")
-    }
-    config.auto_update := IniRead(config_file, "update", "auto-update", config.auto_update)
-    config.expiration_date := IniRead(config_file, "general", "presc_expiration_date", config.expiration_date)
     if(!git_hub.is_online){
         return
     }
@@ -65,7 +59,7 @@ CalculateExpirationDate(arg*){
 
 }
 
-github := Git(git_user, git_repo)
+
 
 LoadConfigs(&github)
 
