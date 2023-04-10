@@ -1,69 +1,80 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
 
-was_updated := false
-DetectHiddenWindows(True)
-if(WinExist(GetAppName() "_batch.bat")){
-    was_updated := true
-}
+; TODO: Detect if it was updated
+; was_updated := false
+; DetectHiddenWindows(True)
+; if(WinExist(A_AppName "_batch.bat")){
+;     was_updated := true
+; }
 
 ; Includes
-#Include ..\libraries\Bruno-Functions\bruno-functions.ahk
 #Include ..\libraries\Github-Updater.ahk\github-updater.ahk
+#Include ..\libraries\Bruno-Functions\bruno-functions.ahk
+#Include ..\libraries\Bruno-Functions\IsOnline.ahk
 
-dir_path := A_AppData "\" GetAppName()
-
-if(DirExist(dir_path) == ""){
-    DirCreate(dir_path)
-}
-
-config_file := dir_path "\config.ini"
-
-icon_path := dir_path "\icon.ico"
-
-icon_url := "https://drive.google.com/uc?export=download&id=1xNRHV5RBpoEbag6-m5r5ry6y8zy1ZMLV"
-
+A_AppName := GetAppName()
 git_user := "TheBrunoCA"
-
-git_repo := GetAppName()
-
-Class config{
-    static ini := IniFile(config_file, , true)
-    static version := 0.12
-    static auto_update := true
-    static expiration_date := 179
+git_repo := A_AppName
+dir_path := NewDir(A_AppData . "\" . git_user . "\" . git_repo)
+config_file := NewIni(dir_path "\config.ini")
+icon_path := dir_path "\icon.ico"
+icon_url := "https://drive.google.com/uc?export=download&id=1xNRHV5RBpoEbag6-m5r5ry6y8zy1ZMLV"
+github := Git(git_user, git_repo)
+update_file := A_Temp "\" git_repo "-Updated.txt"
+updated := false
+update_message := ""
+if FileExist(update_file) != ""{
+    updated := true
+    update_message := FileRead(update_file)
+    FileDelete(update_file)
 }
 
-LoadConfigs(&git_hub){
-    if(!git_hub.is_online){
-        return
+;Config
+version := IniRead(config_file, "config", "version", "0.12")
+auto_update := IniRead(config_file, "config", "auto update", true)
+expiration_date := IniRead(config_file, "config", "expiration date", 179)
+
+LoadIcon(){
+    if FileExist(icon_path) == ""{
+        if IsOnline() == false
+            return
+        Download icon_url, icon_path
     }
-    if(FileExist(icon_path) == ""){
-        Download(icon_url, icon_path)
-    }
-    TraySetIcon(icon_path)
+    TraySetIcon icon_path
 }
 
-
-OpenConfigMenu(arg*){
+OpenConfigMenu(p_arg*) {
     MsgBox("Ainda não implementado.")
 }
 
-CalculateExpirationDate(arg*){
+CalculateExpirationDate(p_arg*) {
     presc_date := cal_presc_date.Value
     cal_presc_date.Value := A_Now
-    expiration_date := DateAdd(presc_date, config.expiration_date, "Days")
-    expiration_date := FormatTime(expiration_date, "LongDate")
+    valid_until := DateAdd(presc_date, expiration_date, "Days")
+    valid_until := FormatTime(valid_until, "LongDate")
 
-    MsgBox("A receita é válida até " expiration_date)
-
+    MsgBox("A receita é válida até " . valid_until)
 }
 
+CheckUpdates(){
+    if github.IsUpdated(version)
+        return
 
+    answer := MsgBox("Uma nova versão do app foi encontrada, deseja atualizar?", "Versão " github.version " encontrada","0x4")
 
-LoadConfigs(&github)
+    if(answer == "Yes"){
+        github.UpdateApp(dir_path)
+        return
+    }
+}
 
-MainGui := Gui("-MaximizeBox +OwnDialogs", "FP-Extra v-" IniRead(config_file, "version", GetAppName(), ""))
+LoadIcon()
+if (auto_update) {
+    CheckUpdates()
+}
+
+MainGui := Gui("-MaximizeBox +OwnDialogs", "FP-Extra v-" version)
 
 MainGui.SetFont("s20", "Consolas")
 MainGui.AddText("Center", "FP-Extra por " git_user)
@@ -79,7 +90,7 @@ cal_presc_date := MainGui.AddMonthCal("x160 y80")
 btn_calc_date := MainGui.AddButton("x200", "Calcular validade")
 btn_calc_date.OnEvent("Click", CalculateExpirationDate)
 
-if(config.auto_update){
-    CheckUpdates(&github, config_file, A_WorkingDir)
-}
 MainGui.Show()
+
+If updated
+    MsgBox(update_message, git_repo " Atualizado para v-" github.version)
