@@ -31,7 +31,7 @@ if FileExist(update_file) != ""{
 }
 
 ;Config
-version := IniRead(config_file, "config", "version", "0.12")
+version := IniRead(config_file, "config", "version", "0.121")
 auto_update := IniRead(config_file, "config", "auto update", true)
 expiration_date := IniRead(config_file, "config", "expiration date", 179)
 
