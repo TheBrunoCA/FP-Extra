@@ -1,7 +1,7 @@
 
 class FPGui{
     __New() {
-        this.gui                    := Gui("-MaximizeBox +OwnDialogs", gitRepo " v" VERSION)
+        this.gui                    := Gui("-MaximizeBox +OwnDialogs", VERSION)
         this.configButton           := this.gui.AddButton("xm", "Configuracoes")
         this._openConfigCallback    := ObjBindMethod(this, "_openConfigMenu")
         this.configButton           .OnEvent("Click", this._openConfigCallback)
